@@ -20,7 +20,7 @@ public class ConsumerEinfachLoggen {
         try {
             controller.process(record.getPayload());
         } catch (Exception e) {
-            LOGGER.error("Oops, something went terribly wrong with " + record.toString(), e);
+            LOGGER.error("Oops, something went terribly wrong with " + record, e);
         }
         return record.ack();
     }

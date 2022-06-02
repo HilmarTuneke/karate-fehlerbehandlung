@@ -10,8 +10,8 @@ import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
-public class ConsumerDeadLetterQueueEinfach {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerDeadLetterQueueEinfach.class);
+public class ConsumerHerunterfahren {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerHerunterfahren.class);
 
     @Inject
     Controller controller;
@@ -26,7 +26,8 @@ public class ConsumerDeadLetterQueueEinfach {
             controller.process(record.getPayload());
         } catch (Exception e) {
             LOGGER.error("Oops, something went terribly wrong with " + record, e);
-            deadLetterEmitter.send(record);
+            throw new Error("Konnte Kakfa-Nachricht " + record + " nicht verarbeiten", e);
+            // Oder: System.exit(1);
         }
         return record.ack();
     }

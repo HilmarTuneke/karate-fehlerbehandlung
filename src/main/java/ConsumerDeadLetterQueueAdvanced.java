@@ -10,8 +10,8 @@ import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
-public class ConsumerDeadLetterQueueEinfach {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerDeadLetterQueueEinfach.class);
+public class ConsumerDeadLetterQueueAdvanced {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerDeadLetterQueueAdvanced.class);
 
     @Inject
     Controller controller;
@@ -22,11 +22,17 @@ public class ConsumerDeadLetterQueueEinfach {
 
     @Incoming("kafka")
     public CompletionStage<Void> consume(KafkaRecord<String, String> record) {
-        try {
-            controller.process(record.getPayload());
-        } catch (Exception e) {
-            LOGGER.error("Oops, something went terribly wrong with " + record, e);
+        if(controller.shouldSkip(record.getKey())) {
+            LOGGER.warn("Record skipped: " + record);
             deadLetterEmitter.send(record);
+        } else {
+            try {
+                controller.process(record.getPayload());
+            } catch (Exception e) {
+                LOGGER.error("Oops, something went terribly wrong with " + record, e);
+                controller.addKeyToSkip(record.getKey());
+                deadLetterEmitter.send(record);
+            }
         }
         return record.ack();
     }
