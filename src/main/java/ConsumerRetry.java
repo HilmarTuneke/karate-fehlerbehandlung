@@ -16,8 +16,9 @@ public class ConsumerRetry {
     @Inject
     Controller controller;
 
+    // TODO: Wie sähe das mit der Retry-Strategie aus?
     @Incoming("kafka")
-    @Retry(maxRetries = 10, delay = 2, delayUnit = ChronoUnit.SECONDS, jitter = 500L)
+    @Retry(maxRetries = -1, delay = 2, delayUnit = ChronoUnit.MINUTES, jitter = 500L)
     public CompletionStage<Void> consume(KafkaRecord<String, String> record) {
         try {
             controller.process(record.getPayload());
