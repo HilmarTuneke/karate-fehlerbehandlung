@@ -1,3 +1,4 @@
+import io.smallrye.faulttolerance.api.ExponentialBackoff;
 import io.smallrye.reactive.messaging.kafka.KafkaRecord;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
@@ -10,15 +11,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
-public class ConsumerRetry {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerRetry.class);
+public class ConsumerPausierenWiederholen {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerPausierenWiederholen.class);
 
     @Inject
     Controller controller;
 
-    // TODO: Wie sähe das mit der Retry-Strategie aus?
     @Incoming("kafka")
-    @Retry(maxRetries = -1, delay = 2, delayUnit = ChronoUnit.MINUTES, jitter = 500L)
+    @Retry(delay = 500L, jitter = 500L, maxRetries = -1, maxDuration = 0)
+    @ExponentialBackoff(maxDelay = 2, maxDelayUnit = ChronoUnit.HOURS)
     public CompletionStage<Void> consume(KafkaRecord<String, String> record) {
         try {
             controller.process(record.getPayload());
