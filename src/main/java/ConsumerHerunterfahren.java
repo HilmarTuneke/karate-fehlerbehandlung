@@ -28,7 +28,7 @@ public class ConsumerHerunterfahren {
         } catch (Exception e) {
             LOGGER.error("Oops, something went terribly wrong with " + record, e);
             System.exit(1);
-            return null;    // never reached
+            return null; // never reached
         }
     }
 }

@@ -23,11 +23,11 @@ public class ConsumerPausierenWiederholen {
     public CompletionStage<Void> consume(KafkaRecord<String, String> record) {
         try {
             controller.process(record.getPayload());
+            return record.ack();
         } catch (Exception e) {
             LOGGER.error("Oops, something went terribly wrong with " + record, e);
             throw e;
         }
-        return record.ack();
     }
 
 }
