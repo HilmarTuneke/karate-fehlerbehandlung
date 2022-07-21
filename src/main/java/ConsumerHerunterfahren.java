@@ -1,3 +1,4 @@
+import io.smallrye.reactive.messaging.kafka.IncomingKafkaRecord;
 import io.smallrye.reactive.messaging.kafka.KafkaRecord;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
@@ -21,7 +22,7 @@ public class ConsumerHerunterfahren {
     Emitter<String> deadLetterEmitter;
 
     @Incoming("kafka")
-    public CompletionStage<Void> consume(KafkaRecord<String, String> record) {
+    public CompletionStage<Void> consume(IncomingKafkaRecord<String, String> record) {
         try {
             controller.process(record.getPayload());
             return record.ack();
